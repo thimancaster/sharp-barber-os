@@ -229,6 +229,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          commission_rate: number | null
           created_at: string
           full_name: string
           id: string
@@ -237,9 +238,11 @@ export type Database = {
           phone: string | null
           updated_at: string
           user_id: string
+          working_hours: Json | null
         }
         Insert: {
           avatar_url?: string | null
+          commission_rate?: number | null
           created_at?: string
           full_name: string
           id?: string
@@ -248,9 +251,11 @@ export type Database = {
           phone?: string | null
           updated_at?: string
           user_id: string
+          working_hours?: Json | null
         }
         Update: {
           avatar_url?: string | null
+          commission_rate?: number | null
           created_at?: string
           full_name?: string
           id?: string
@@ -259,6 +264,7 @@ export type Database = {
           phone?: string | null
           updated_at?: string
           user_id?: string
+          working_hours?: Json | null
         }
         Relationships: [
           {
@@ -272,6 +278,7 @@ export type Database = {
       }
       services: {
         Row: {
+          commission_rate: number | null
           created_at: string
           description: string | null
           duration_minutes: number
@@ -283,6 +290,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          commission_rate?: number | null
           created_at?: string
           description?: string | null
           duration_minutes?: number
@@ -294,6 +302,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          commission_rate?: number | null
           created_at?: string
           description?: string | null
           duration_minutes?: number
