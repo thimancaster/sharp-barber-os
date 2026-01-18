@@ -130,7 +130,7 @@ export default function Integracoes() {
   if (!isAdmin) {
     return (
       <div className="flex-1 flex flex-col min-h-screen">
-        <Header />
+        <Header title="Integrações" subtitle="Acesso restrito" />
         <main className="flex-1 p-6 flex items-center justify-center">
           <div className="text-center">
             <h2 className="font-serif text-2xl font-semibold mb-2">Acesso Restrito</h2>
@@ -145,14 +145,8 @@ export default function Integracoes() {
 
   return (
     <div className="flex-1 flex flex-col min-h-screen">
-      <Header />
+      <Header title="Integrações" subtitle="Configure as integrações com n8n e WhatsApp" />
       <main className="flex-1 p-6">
-        <div className="mb-6">
-          <h1 className="font-serif text-3xl font-semibold">Integrações</h1>
-          <p className="text-muted-foreground">
-            Configure as integrações com n8n e WhatsApp para o assistente de IA
-          </p>
-        </div>
 
         <div className="grid gap-6 max-w-2xl">
           {/* n8n Webhook Configuration */}

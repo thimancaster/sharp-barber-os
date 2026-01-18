@@ -149,14 +149,8 @@ export default function Agenda() {
 
   return (
     <div className="flex-1 flex flex-col min-h-screen">
-      <Header />
+      <Header title="Agenda" subtitle={isAdmin ? "Visualize todos os agendamentos" : "Seus agendamentos"} />
       <main className="flex-1 p-6">
-        <div className="mb-6">
-          <h1 className="font-serif text-3xl font-semibold">Agenda</h1>
-          <p className="text-muted-foreground">
-            {isAdmin ? "Visualize todos os agendamentos" : "Seus agendamentos"}
-          </p>
-        </div>
 
         <div className="card-elevated rounded-lg p-4">
           {isLoading ? (
