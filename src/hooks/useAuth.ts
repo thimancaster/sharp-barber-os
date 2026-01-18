@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import type { Json } from "@/integrations/supabase/types";
 
 interface Profile {
   id: string;
@@ -11,9 +12,8 @@ interface Profile {
   avatar_url: string | null;
   is_active: boolean;
   commission_rate: number | null;
-  working_hours: Record<string, { start: string; end: string } | null> | null;
+  working_hours: Json | null;
 }
-
 interface AuthState {
   user: User | null;
   profile: Profile | null;

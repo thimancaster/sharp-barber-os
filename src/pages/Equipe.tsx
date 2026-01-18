@@ -177,14 +177,8 @@ export default function Equipe() {
 
   return (
     <div className="flex-1 flex flex-col min-h-screen">
-      <Header />
+      <Header title="Equipe" subtitle="Gerencie os barbeiros e suas configurações" />
       <main className="flex-1 p-6">
-        <div className="mb-6">
-          <h1 className="font-serif text-3xl font-semibold">Equipe</h1>
-          <p className="text-muted-foreground">
-            Gerencie os barbeiros e suas configurações
-          </p>
-        </div>
 
         <div className="card-elevated rounded-lg">
           <div className="p-4 border-b border-border">
