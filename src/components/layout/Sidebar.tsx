@@ -6,7 +6,10 @@ import {
   Scissors, 
   Settings, 
   LogOut,
-  Workflow
+  Workflow,
+  Package,
+  DollarSign,
+  UserCog
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +18,9 @@ const navigation = [
   { name: "Agenda", href: "/agenda", icon: Calendar },
   { name: "Clientes", href: "/clientes", icon: Users },
   { name: "Serviços", href: "/servicos", icon: Scissors },
+  { name: "Produtos", href: "/produtos", icon: Package },
+  { name: "Financeiro", href: "/financeiro", icon: DollarSign },
+  { name: "Equipe", href: "/equipe", icon: UserCog },
   { name: "Integrações", href: "/integracoes", icon: Workflow },
   { name: "Configurações", href: "/configuracoes", icon: Settings },
 ];
