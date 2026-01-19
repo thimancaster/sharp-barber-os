@@ -139,6 +139,53 @@ export type Database = {
           },
         ]
       }
+      expenses: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string
+          description: string | null
+          due_date: string
+          id: string
+          name: string
+          organization_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          due_date: string
+          id?: string
+          name: string
+          organization_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          id?: string
+          name?: string
+          organization_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       n8n_integrations: {
         Row: {
           api_key: string | null
@@ -226,6 +273,56 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          cost_price: number
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          min_stock_alert: number | null
+          name: string
+          organization_id: string
+          sale_price: number
+          stock_quantity: number
+          updated_at: string
+        }
+        Insert: {
+          cost_price?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          min_stock_alert?: number | null
+          name: string
+          organization_id: string
+          sale_price?: number
+          stock_quantity?: number
+          updated_at?: string
+        }
+        Update: {
+          cost_price?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          min_stock_alert?: number | null
+          name?: string
+          organization_id?: string
+          sale_price?: number
+          stock_quantity?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -278,6 +375,7 @@ export type Database = {
       }
       services: {
         Row: {
+          category: string | null
           commission_rate: number | null
           created_at: string
           description: string | null
@@ -290,6 +388,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category?: string | null
           commission_rate?: number | null
           created_at?: string
           description?: string | null
@@ -302,6 +401,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category?: string | null
           commission_rate?: number | null
           created_at?: string
           description?: string | null

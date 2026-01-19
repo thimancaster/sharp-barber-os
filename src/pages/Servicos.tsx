@@ -21,8 +21,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Trash2, Scissors, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Scissors, Search, Filter } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -34,6 +41,7 @@ interface Service {
   duration_minutes: number;
   commission_rate: number | null;
   is_active: boolean;
+  category: string | null;
 }
 
 interface ServiceFormData {
@@ -43,6 +51,7 @@ interface ServiceFormData {
   duration_minutes: string;
   commission_rate: string;
   is_active: boolean;
+  category: string;
 }
 
 const initialFormData: ServiceFormData = {
@@ -52,12 +61,21 @@ const initialFormData: ServiceFormData = {
   duration_minutes: "30",
   commission_rate: "0",
   is_active: true,
+  category: "outros",
 };
+
+const serviceCategories = [
+  { value: "cabelo", label: "Cabelo" },
+  { value: "barba", label: "Barba" },
+  { value: "combo", label: "Combo" },
+  { value: "outros", label: "Outros" },
+];
 
 export default function Servicos() {
   const { profile, isAdmin } = useAuth();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [formData, setFormData] = useState<ServiceFormData>(initialFormData);
@@ -84,6 +102,7 @@ export default function Servicos() {
         duration_minutes: parseInt(data.duration_minutes),
         commission_rate: parseFloat(data.commission_rate) || 0,
         is_active: data.is_active,
+        category: data.category,
         organization_id: profile!.organization_id,
       });
       if (error) throw error;
@@ -108,6 +127,7 @@ export default function Servicos() {
           price: parseFloat(data.price),
           duration_minutes: parseInt(data.duration_minutes),
           commission_rate: parseFloat(data.commission_rate) || 0,
+          category: data.category,
           is_active: data.is_active,
         })
         .eq("id", id);
@@ -152,6 +172,7 @@ export default function Servicos() {
       duration_minutes: service.duration_minutes.toString(),
       commission_rate: (service.commission_rate || 0).toString(),
       is_active: service.is_active,
+      category: service.category || "outros",
     });
     setIsDialogOpen(true);
   };
@@ -165,9 +186,17 @@ export default function Servicos() {
     }
   };
 
-  const filteredServices = services.filter((service) =>
-    service.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredServices = services.filter((service) => {
+    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === "all" || service.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  // Group services by category for display
+  const groupedServices = serviceCategories.reduce((acc, cat) => {
+    acc[cat.value] = filteredServices.filter(s => s.category === cat.value);
+    return acc;
+  }, {} as Record<string, Service[]>);
 
   return (
     <div className="flex-1 flex flex-col min-h-screen">
@@ -234,16 +263,38 @@ export default function Servicos() {
                       />
                     </div>
                   </div>
-                  <div>
-                    <label className="text-sm text-muted-foreground">Comissão (%)</label>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      value={formData.commission_rate}
-                      onChange={(e) =>
-                        setFormData({ ...formData, commission_rate: e.target.value })
-                      }
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm text-muted-foreground">Categoria</label>
+                      <Select
+                        value={formData.category}
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, category: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {serviceCategories.map((cat) => (
+                            <SelectItem key={cat.value} value={cat.value}>
+                              {cat.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-sm text-muted-foreground">Comissão (%)</label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={formData.commission_rate}
+                        onChange={(e) =>
+                          setFormData({ ...formData, commission_rate: e.target.value })
+                        }
+                      />
+                    </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <label className="text-sm text-muted-foreground">Ativo</label>
@@ -270,14 +321,32 @@ export default function Servicos() {
 
         <div className="card-elevated rounded-lg">
           <div className="p-4 border-b border-border">
-            <div className="relative max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar serviço..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+            <div className="flex items-center gap-4">
+              <div className="relative max-w-sm flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar serviço..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-muted-foreground" />
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas</SelectItem>
+                    {serviceCategories.map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
@@ -290,6 +359,7 @@ export default function Servicos() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Serviço</TableHead>
+                  <TableHead>Categoria</TableHead>
                   <TableHead>Duração</TableHead>
                   <TableHead>Preço</TableHead>
                   <TableHead>Comissão</TableHead>
@@ -314,6 +384,11 @@ export default function Servicos() {
                           )}
                         </div>
                       </div>
+                      </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="capitalize">
+                        {serviceCategories.find(c => c.value === service.category)?.label || service.category || "Outros"}
+                      </Badge>
                     </TableCell>
                     <TableCell>{service.duration_minutes} min</TableCell>
                     <TableCell className="font-medium text-primary">
@@ -352,7 +427,7 @@ export default function Servicos() {
                 ))}
                 {filteredServices.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                       Nenhum serviço encontrado
                     </TableCell>
                   </TableRow>
