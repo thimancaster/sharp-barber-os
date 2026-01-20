@@ -423,6 +423,64 @@ export type Database = {
           },
         ]
       }
+      stock_movements: {
+        Row: {
+          created_at: string
+          created_by_profile_id: string | null
+          id: string
+          movement_type: string
+          notes: string | null
+          organization_id: string
+          product_id: string
+          quantity: number
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by_profile_id?: string | null
+          id?: string
+          movement_type?: string
+          notes?: string | null
+          organization_id: string
+          product_id: string
+          quantity: number
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by_profile_id?: string | null
+          id?: string
+          movement_type?: string
+          notes?: string | null
+          organization_id?: string
+          product_id?: string
+          quantity?: number
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_created_by_profile_id_fkey"
+            columns: ["created_by_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
