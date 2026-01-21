@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, 
   Users, 
@@ -12,6 +12,8 @@ import {
   UserCog
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -27,6 +29,29 @@ const navigation = [
 
 export function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast({
+        title: "Sessão encerrada",
+        description: "Até logo!",
+      });
+      
+      navigate("/auth");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível encerrar a sessão",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col bg-sidebar border-r border-sidebar-border">
@@ -67,7 +92,10 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="border-t border-sidebar-border p-4">
-        <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-destructive">
+        <button 
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-destructive"
+        >
           <LogOut className="h-5 w-5" />
           Sair
         </button>

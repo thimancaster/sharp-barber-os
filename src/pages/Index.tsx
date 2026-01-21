@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Session } from "@supabase/supabase-js";
 import { Loader2 } from "lucide-react";
 
 export default function Index() {
@@ -9,27 +8,51 @@ export default function Index() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
+    const checkUserStatus = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session) {
+          navigate("/auth");
+          return;
+        }
+
+        // Check if user has a profile (completed onboarding)
+        const { data: profile, error } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("user_id", session.user.id)
+          .single();
+
+        if (error || !profile) {
+          // User is authenticated but has no profile - needs onboarding
+          navigate("/onboarding");
+        } else {
+          // User has profile - go to dashboard
+          navigate("/dashboard");
+        }
+      } catch (error) {
+        console.error("Error checking user status:", error);
+        navigate("/auth");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (session) {
-          navigate("/dashboard");
-        } else {
+        if (event === "SIGNED_OUT") {
           navigate("/auth");
+          setLoading(false);
+        } else if (event === "SIGNED_IN" && session) {
+          checkUserStatus();
         }
-        setLoading(false);
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate("/dashboard");
-      } else {
-        navigate("/auth");
-      }
-      setLoading(false);
-    });
+    // Check initial status
+    checkUserStatus();
 
     return () => subscription.unsubscribe();
   }, [navigate]);

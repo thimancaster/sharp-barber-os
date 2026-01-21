@@ -518,6 +518,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      complete_onboarding: {
+        Args: {
+          org_address?: string
+          org_name: string
+          org_phone?: string
+          org_slug: string
+          profile_full_name: string
+          profile_phone?: string
+        }
+        Returns: Json
+      }
       get_user_organization_id: { Args: never; Returns: string }
       has_role: {
         Args: {
