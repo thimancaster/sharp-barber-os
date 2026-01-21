@@ -60,7 +60,7 @@ export default function Auth() {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
         });
@@ -82,19 +82,28 @@ export default function Auth() {
           return;
         }
 
-        toast({
-          title: "Bem-vindo!",
-          description: "Login realizado com sucesso.",
-        });
-        navigate("/dashboard");
+        // Check if user has a profile
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("user_id", data.user.id)
+          .single();
+
+        if (profile) {
+          toast({
+            title: "Bem-vindo!",
+            description: "Login realizado com sucesso.",
+          });
+          navigate("/dashboard");
+        } else {
+          // User needs to complete onboarding
+          navigate("/onboarding");
+        }
       } else {
-        const redirectUrl = `${window.location.origin}/`;
-        
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
           options: {
-            emailRedirectTo: redirectUrl,
             data: {
               full_name: formData.fullName,
             },
@@ -119,11 +128,21 @@ export default function Auth() {
           return;
         }
 
-        toast({
-          title: "Conta criada!",
-          description: "Verifique seu email para confirmar o cadastro, ou faça login diretamente.",
-        });
-        setIsLogin(true);
+        // With auto-confirm enabled, user is automatically signed in
+        if (data.session) {
+          toast({
+            title: "Conta criada!",
+            description: "Vamos configurar sua barbearia.",
+          });
+          navigate("/onboarding");
+        } else {
+          // Fallback if auto-confirm is disabled
+          toast({
+            title: "Conta criada!",
+            description: "Verifique seu email para confirmar o cadastro.",
+          });
+          setIsLogin(true);
+        }
       }
     } catch (error) {
       toast({
